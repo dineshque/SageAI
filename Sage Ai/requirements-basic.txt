@@ -1,0 +1,6 @@
+# Basic Requirements - Just to get the server running
+# Install with: pip install -r requirements-basic.txt
+
+fastapi
+uvicorn[standard]
+python-dotenv

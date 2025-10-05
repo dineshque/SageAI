@@ -10,20 +10,41 @@ import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, Award, RotateCw } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { digitalOceanAPI } from "@/lib/digitalocean-api";
 
-export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
+interface QuizClientProps {
+  questions: QuizQuestion[];
+  topic?: string;
+}
+
+export function QuizClient({ questions, topic = "General Knowledge" }: QuizClientProps) {
+  const { studentProfile } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [startTime] = useState(Date.now());
+  const [answers, setAnswers] = useState<Array<{ question: string; userAnswer: string; correctAnswer: string; isCorrect: boolean }>>([]);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
 
   const handleNext = () => {
-    if (isCorrect) {
-      setScore(score + 1);
+    if (selectedAnswer) {
+      // Record the answer
+      const answerRecord = {
+        question: currentQuestion.question,
+        userAnswer: selectedAnswer,
+        correctAnswer: currentQuestion.correctAnswer,
+        isCorrect: isCorrect
+      };
+      setAnswers([...answers, answerRecord]);
+
+      if (isCorrect) {
+        setScore(score + 1);
+      }
     }
 
     setIsAnswered(false);
@@ -33,6 +54,32 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       setShowResult(true);
+      submitQuizResults();
+    }
+  };
+
+  const submitQuizResults = async () => {
+    if (!studentProfile) {
+      console.warn("No student profile available for quiz submission");
+      return;
+    }
+
+    try {
+      const timeSpent = Math.round((Date.now() - startTime) / 1000); // in seconds
+      
+      await digitalOceanAPI.submitQuizResults(
+        studentProfile,
+        topic,
+        score,
+        questions.length,
+        timeSpent,
+        answers
+      );
+      
+      console.log("Quiz results successfully submitted to DigitalOcean API");
+    } catch (error) {
+      console.warn("Failed to submit quiz results:", error);
+      // Continue with the quiz completion even if submission fails
     }
   };
 

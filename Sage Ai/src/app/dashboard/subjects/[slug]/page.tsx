@@ -77,7 +77,7 @@ export default async function SubjectDetailPage({ params }: { params: { slug: st
                             <CardTitle className="text-md font-headline">AI-Powered Summary</CardTitle>
                         </CardHeader>
                         <CardContent className="prose prose-sm max-w-none text-foreground">
-                            <p>{await getSummary(topic.title, studentProfile, topic.description, learningStyle)}</p>
+                            <p>AI summary will be generated when you expand this topic. (Feature temporarily disabled)</p>
                         </CardContent>
                     </Card>
                     <Button asChild>

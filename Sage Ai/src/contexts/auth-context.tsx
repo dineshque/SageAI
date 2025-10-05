@@ -6,7 +6,6 @@ import { signInWithEmail, signUpWithEmail, signOut, onAuthStateChanged } from "@
 import { getStudentProfile, createStudentProfile, updateStudentProfile as updateProfileInDb } from "@/lib/firebase/firestore";
 import type { StudentProfile } from "@/lib/definitions";
 import { Loader } from "lucide-react";
-import { auth } from "@/lib/firebase/auth";
 
 
 interface AuthContextType {
@@ -27,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(async (user: User | null) => {
       setLoading(true);
       if (user) {
         setUser(user);

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { BrainCircuit, User, LogIn } from "lucide-react";
+import { BrainCircuit, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { APIStatus } from "./api-status";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,7 @@ export default function Header() {
         <span className="ml-2 text-xl font-bold font-headline">Sage AI</span>
       </Link>
       <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
+        <APIStatus />
         {user && studentProfile ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

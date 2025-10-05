@@ -12,7 +12,6 @@ import { StudentProfile } from "@/lib/definitions";
 import { getStudentProfile } from "@/lib/firebase/firestore";
 import { getCurrentUser } from "@/lib/firebase/auth";
 import { redirect } from "next/navigation";
-import { getAIRecommendedTopics } from "@/lib/api";
 import { ArrowRight } from "lucide-react";
 import {
   Carousel,
@@ -22,16 +21,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { LearningChart } from "@/components/learning-chart";
+import { AIRecommendations } from "@/components/ai-recommendations";
 
-async function getRecommendations(studentProfile: StudentProfile) {
-  try {
-    const recommendations = await getAIRecommendedTopics(studentProfile);
-    return recommendations;
-  } catch (error) {
-    console.error("Failed to get AI recommendations:", error);
-    return { recommendedTopics: [], reasoning: "Could not fetch recommendations at this time." };
-  }
-}
+
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -49,7 +41,6 @@ export default async function DashboardPage() {
   }
 
   const subjects = getSubjectsForStudent(studentProfile);
-  const recommendations = await getRecommendations(studentProfile);
   
   return (
     <div className="space-y-6">
@@ -90,30 +81,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">AI Recommended Topics</CardTitle>
-            <CardDescription className="text-xs">{recommendations.reasoning}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {recommendations.recommendedTopics.length > 0 ? (
-                recommendations.recommendedTopics.map((topic, index) => (
-                  <li key={index} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{topic}</span>
-                     <Button variant="ghost" size="sm" asChild>
-                       <Link href={`/dashboard/quiz/${encodeURIComponent(topic)}`}>
-                         Start Quiz <ArrowRight className="ml-2 h-4 w-4" />
-                       </Link>
-                     </Button>
-                  </li>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">No recommendations available right now.</p>
-              )}
-            </ul>
-          </CardContent>
-        </Card>
+        <AIRecommendations />
 
         <LearningChart />
       </div>
