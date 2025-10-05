@@ -1,0 +1,284 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile within the Sage AI platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "age": {
+          "type": "number",
+          "description": "The user's age."
+        },
+        "gender": {
+          "type": "string",
+          "description": "The user's gender."
+        },
+        "schoolName": {
+          "type": "string",
+          "description": "The name of the user's school."
+        },
+        "schoolBoard": {
+          "type": "string",
+          "description": "The school board the user belongs to (e.g., CBSE, ICSE, IB, State)."
+        },
+        "gradeClass": {
+          "type": "string",
+          "description": "The user's grade or class."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "age",
+        "gender",
+        "schoolName",
+        "schoolBoard",
+        "gradeClass"
+      ]
+    },
+    "MBTIResult": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MBTIResult",
+      "type": "object",
+      "description": "Stores the results of a user's Myers-Briggs Type Indicator (MBTI) personality quiz.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MBTIResult entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:1 MBTIResult)"
+        },
+        "mbtiType": {
+          "type": "string",
+          "description": "The calculated MBTI type (e.g., INFP, ESTJ)."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the MBTI test was taken.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "mbtiType",
+        "timestamp"
+      ]
+    },
+    "Subject": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Subject",
+      "type": "object",
+      "description": "Represents a subject a student is learning.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Subject entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the subject (e.g., Mathematics, Science)."
+        },
+        "schoolBoard": {
+          "type": "string",
+          "description": "The school board the subject belongs to (e.g., CBSE, ICSE, IB, State)."
+        },
+        "gradeClass": {
+          "type": "string",
+          "description": "The grade or class for which the subject is relevant."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "schoolBoard",
+        "gradeClass"
+      ]
+    },
+    "SyllabusTopic": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SyllabusTopic",
+      "type": "object",
+      "description": "Represents a topic within a subject's syllabus.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the SyllabusTopic entity."
+        },
+        "subjectId": {
+          "type": "string",
+          "description": "Reference to Subject. (Relationship: Subject 1:N SyllabusTopic)"
+        },
+        "topicName": {
+          "type": "string",
+          "description": "The name of the syllabus topic."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the syllabus topic."
+        }
+      },
+      "required": [
+        "id",
+        "subjectId",
+        "topicName",
+        "description"
+      ]
+    },
+    "Recommendation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Recommendation",
+      "type": "object",
+      "description": "Represents an AI-powered recommendation for a student.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Recommendation entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Recommendation)"
+        },
+        "topicId": {
+          "type": "string",
+          "description": "Reference to SyllabusTopic. (Relationship: SyllabusTopic 1:N Recommendation)"
+        },
+        "recommendationType": {
+          "type": "string",
+          "description": "The type of recommendation (e.g., topic summary, quiz, practice problem)."
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the recommendation (e.g., the summary text, quiz questions)."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the recommendation was generated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "topicId",
+        "recommendationType",
+        "content",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. All documents are owned by the user with ID {userId}.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/mbtiResults/{mbtiResultId}",
+        "definition": {
+          "entityName": "MBTIResult",
+          "schema": {
+            "$ref": "#/backend/entities/MBTIResult"
+          },
+          "description": "Stores MBTI results for a user. Accessed via path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "mbtiResultId",
+              "description": "The unique identifier of the MBTI result."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/recommendations/{recommendationId}",
+        "definition": {
+          "entityName": "Recommendation",
+          "schema": {
+            "$ref": "#/backend/entities/Recommendation"
+          },
+          "description": "Stores AI-powered recommendations for a student. Accessed via path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "recommendationId",
+              "description": "The unique identifier of the recommendation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/subjects/{subjectId}",
+        "definition": {
+          "entityName": "Subject",
+          "schema": {
+            "$ref": "#/backend/entities/Subject"
+          },
+          "description": "Stores subjects. Accessible based on schoolBoard and gradeClass.",
+          "params": [
+            {
+              "name": "subjectId",
+              "description": "The unique identifier of the subject."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/subjects/{subjectId}/syllabusTopics/{topicId}",
+        "definition": {
+          "entityName": "SyllabusTopic",
+          "schema": {
+            "$ref": "#/backend/entities/SyllabusTopic"
+          },
+          "description": "Stores syllabus topics for a subject. Accessed as a subcollection of Subject.",
+          "params": [
+            {
+              "name": "subjectId",
+              "description": "The unique identifier of the subject."
+            },
+            {
+              "name": "topicId",
+              "description": "The unique identifier of the syllabus topic."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to provide a secure, scalable, and easily maintainable data model for the Sage AI personalized learning platform. It emphasizes authorization independence, clarity of intent, and structural segregation. User profiles and associated data are stored under the `/users/{userId}` path, ensuring clear ownership. The `MBTIResult` and `Recommendation` entities, directly associated with user profiles, are stored as subcollections under each user. This ensures that all data related to a user is easily accessible and that security rules can be applied based on the user's ID. Subjects are stored in a top-level collection `/subjects`, categorized by `schoolBoard` and `gradeClass`, enabling efficient querying. The syllabus topics are structured as a subcollection under subjects (`/subjects/{subjectId}/syllabusTopics`) to reflect the hierarchical relationship between subjects and their topics. This structure promotes Authorization Independence by ensuring that access control can be implemented without relying on `get()` calls to parent documents. For example, user-specific data (MBTI results, recommendations) are always accessed via the `/users/{userId}` path, enabling simple, path-based security rules. This design also supports required QAPs: List operations on user-owned data (e.g., recommendations) are secured by path-based rules, while list operations on shared data (e.g., subjects) can be filtered using query constraints based on `schoolBoard` and `gradeClass`. Invariants such as ownership and timestamps are easily enforced through security rules due to the clear hierarchical structure and the consistent naming conventions."
+  }
+}

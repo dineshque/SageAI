@@ -1,0 +1,30 @@
+# Minimal Requirements for Sage AI DigitalOcean Backend
+# Use this for a basic setup with essential dependencies only
+
+# Core Framework (REQUIRED)
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# Environment and Configuration
+python-dotenv>=1.0.0
+
+# HTTP Client for API calls
+httpx>=0.25.2
+
+# Optional: AI/ML (uncomment what you need)
+# openai>=1.3.7
+# google-generativeai>=0.3.2
+# anthropic>=0.7.8
+
+# Optional: Database (uncomment if needed)
+# psycopg2-binary>=2.9.9  # For PostgreSQL
+# sqlalchemy>=2.0.23      # For ORM
+
+# Optional: Data processing (uncomment if needed)
+# pandas>=2.1.4
+# numpy>=1.25.2
+
+# Optional: Security (uncomment for production)
+# python-jose[cryptography]>=3.3.0
+# passlib[bcrypt]>=1.7.4
